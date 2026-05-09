@@ -2,7 +2,7 @@ import {Toaster} from 'react-hot-toast';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import LoginLanding from './pages/LoginLanding';
 import Layout from './pages/Layout';
-import Dashboard from './pages/DAshboard';
+import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
 import Attendance from './pages/Attendance';
 import Leave from './pages/Leave';
