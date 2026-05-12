@@ -158,7 +158,7 @@ export const dummyLeaveData = [
         createdAt: "2026-03-13T13:49:48.618Z",
         updatedAt: "2026-03-13T13:51:44.251Z",
         id: "69b415fcf8a807df391d7be0",
-        employee: [dummyEmployeeData[2]],
+        employee: dummyEmployeeData[2],
     },
     {
         _id: "69b415dff8a807df391d7bdb",

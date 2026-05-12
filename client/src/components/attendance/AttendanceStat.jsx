@@ -1,5 +1,4 @@
 import { AlertCircleIcon, CalendarIcon, ClockIcon } from 'lucide-react';
-import React from 'react'
 
 const AttendanceStat = ({history}) => {
   const totalPresent = history.filter((his)=> his.status === "PRESENT" || his.status === "LATE").length;
