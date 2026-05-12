@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { dummyEmployeeData, DEPARTMENTS } from '../assets/assets'
-import {CrossIcon, Plus, Search, X} from 'lucide-react'
+import { Plus, Search, X} from 'lucide-react'
 import EmployeeCard from "../components/EmployeeCard";
 import EmployeeForm from "../components/EmployeeForm";
 
@@ -31,7 +31,7 @@ const Employees = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3">
         <div className="">
-          <h1 className="page-title">EMployees</h1>
+          <h1 className="page-title">Employees</h1>
           <p className="page-subtitle">Manage your team members</p>
         </div>
         <button onClick={()=> setShowCreateModel(true)} className="btn-primary flex items-center gap-2
@@ -48,9 +48,9 @@ const Employees = () => {
         </div>
         <select value={selectedDept} onChange={(e)=> setSelectedDept(e.target.value)} className="max-w-40">
           <option value=''>All Department</option>
-          {DEPARTMENTS.map((detpName)=>{
+          {DEPARTMENTS.map((detpName)=>(
             <option key={detpName} value={detpName}>{detpName}</option>
-          })}
+          ))}
         </select>
       </div>
 

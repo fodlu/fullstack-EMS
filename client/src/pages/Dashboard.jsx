@@ -9,8 +9,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(()=> {
-    // setData(dummyEmployeeDashboardData);
-    setData(dummyAdminDashboardData)
+    setData(dummyEmployeeDashboardData);
+    // setData(dummyAdminDashboardData)
     setTimeout(() => {
       setLoading(false);
       }, 1000);
@@ -24,12 +24,6 @@ const Dashboard = () => {
   } else {
     return <EmployeeDashboard data={data} />
   }
-
-  // return (
-  //   <div>
-  //       Dashboard
-  //   </div>
-  // )
 }
 
 export default Dashboard
