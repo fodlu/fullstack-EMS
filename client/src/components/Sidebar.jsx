@@ -116,7 +116,7 @@ const Sidebar = () => {
         {mobileOpen && <div className='lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40' onClick={()=> setMobileOpen(false)} />}
 
         {/* Sidebar desktop */}
-        <aside className='hidden lg:flex flex-col h-screen w-65 bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white shrink-0 border-r border-white/4'>
+        <aside className='hidden lg:flex flex-col w-65 bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white shrink-0 border-r border-white/4'>
             { sidebarContent}
         </aside>
 
