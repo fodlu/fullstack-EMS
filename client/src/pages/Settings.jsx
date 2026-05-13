@@ -44,7 +44,7 @@ const Settings = () => {
           </div>
         </div>
         <button onClick={()=> setShowPasswordModal(true)} className="btn-secondary text-sm">
-          Change Password
+          Change
         </button>
       </div>
       <ChangePasswordModel open={showPasswordModal} onClose={()=>setShowPasswordModal(false)} />
