@@ -1,7 +1,7 @@
 import { Loader2, Plus, X } from 'lucide-react';
-import React, { useState } from 'react'
+import { useState } from 'react'
 
-const PayslipGenerateForm = ({employee, onSuccess}) => {
+const PayslipGenerateForm = ({employees, onSuccess}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -24,16 +24,16 @@ const PayslipGenerateForm = ({employee, onSuccess}) => {
                 <button className="text-slate-400 hover:text-slate-600 p-1" onClick={()=> setIsOpen(false)}><X size={20} /></button>
             </div>
             <form onSubmit={handleSubmit} className='space-y-4'>
-                {/* select employee */}
+                {/* select s */}
                 <div className="">
                     <label className='block text-sm font-medium text-slate-700 mb-2'>
                         Employee
                     </label>
 
-                    <select name="employeeid" required>
-                        {employee.map((emp)=>{
+                    <select name="sid" required>
+                        {employees.map((emp)=>(
                             <option value={emp.id} key={emp.id}>{emp.firstName} {emp.lastName} ({emp.position})</option>
-                        })}
+                        ))}
                     </select>
                 </div>
 
