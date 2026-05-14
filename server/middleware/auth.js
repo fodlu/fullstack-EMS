@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 
-export const protect = (req, res, next) {
+export const protect = (req, res, next) => {
     try {
         const authHeaders = req.headers.authorization || req.headers.AUTHORIZATION;
         if(!authHeaders) {

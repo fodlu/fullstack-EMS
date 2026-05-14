@@ -20,20 +20,21 @@ const attendanceSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['ABSENT', 'PRESENT', 'LATE']
+        enum: ['ABSENT', 'PRESENT', 'LATE'],
         default: 'PRESENT',
     },
-    workinngHours: {
+    workingHours: {
         type: Number,
         default: null,
     },
     dayType: {
-        enum: ['Full Day', 'Three Quater days', 'Half Day', 'Short Day', null],
-        default: null
+        type: String,
+        enum: ['Full Day', 'Three Quarter days', 'Half Day', 'Short Day', null],
+        default: null,
     }
 }, {timestamps: true});
 
-attendanceSchema.index({employeeId: 1, date: 1, {unique: true}})
+attendanceSchema.index({employeeId: 1, date: 1}, {unique: true})
 
 const Attendance = mongoose.models.Attendance || mongoose.model("Attendance", attendanceSchema);
 

@@ -7,7 +7,7 @@ import User from "../models/User.js";
 export const getEmployees = async (req, res) => {
     try {
         const {department} = req.query;
-        cont where = {}
+        const where = {}
 
         if(department) {
             where.department = department;
@@ -76,9 +76,9 @@ export const updateEmployee = async (req, res) => {
         const {id} = req.params;
         const {firstName, lastName, password, email, phone, position, basicSalary, allowances, deductions, employementStatus, bio, department} = req.body;
 
-        const employee = await Employee.findById(id);
+        const employeeFind = await Employee.findById(id);
 
-        if(!employee) return res.status(404).json({error: "Employee not found"});
+        if(!employeeFind) return res.status(404).json({error: "Employee not found"});
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
