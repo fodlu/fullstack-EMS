@@ -59,7 +59,7 @@ export const clockInOut = async (req, res) => {
             return res.json({success: true, type: "CHECK_OUT", data: existing})
         }
     } catch (error) {
-        console.error("Atendance Error: " error);
+        console.error("Atendance Error: ", error);
         return res.status(500).json({error: 'Operation failed'})
     }
 }
@@ -75,7 +75,7 @@ export const getAttendance = async (req, res) => {
         if(!employee) return res.status(404).json({error: "Employee not found"});
 
         const limit = parseInt(req.query.limit || 30);
-        const history = await Attendance.find({employeeId: employee._id}).sort(date: -1).limit(limit)
+        const history = await Attendance.find({employeeId: employee._id}).sort({date: -1}).limit(limit)
 
         return res.json({
             data: history,
