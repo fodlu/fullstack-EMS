@@ -66,7 +66,6 @@ const LoginForm = ({role, title, subtitle}) => {
         </button>
       </form>
       </div>
-
     </div>
   )
 }

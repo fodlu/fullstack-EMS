@@ -2,7 +2,6 @@ import Employee from "../models/Employee.js";
 
 // get profile
 // get /api/profile
-
 export const getProfile = async(req, res) => {
     try {
         const session = req.session;
@@ -24,7 +23,6 @@ export const getProfile = async(req, res) => {
 
 // update profile
 // put /api/profile
-
 export const updateProfile = async(req, res) => {
     try {
         const session = req.session
@@ -41,7 +39,7 @@ export const updateProfile = async(req, res) => {
         await Employee.findByIdAndUpdate(employee._id, {
             bio: req.body.bio
         })
-        return res.json({success: true})
+        return res.json({success: true, message: "Bio Updated!"})
     } catch (error) {
         return res.status(500).json({error: "Failed to update profile"})
     }

@@ -24,7 +24,7 @@ export const createLeave = async(req, res) => {
             return res.status(400).json({error: "Leave date must be in the future" })
         }
 
-        if(new Date(ebdDate) < new Date(startDate)) {
+        if(new Date(endDate) < new Date(startDate)) {
             return res.status(400).json({error: "Leave date cannot be before the start date" })
         }
 
@@ -91,7 +91,6 @@ export const updateLeaveStatus = async(req, res) => {
         if(!['APPROVED', "REJECTED", "PENDING"].includes(status)){
             return res.status(400).json({error: "Invalid status" })
         }
-
 
         const leave = await leaveApplication.findByIdAndUpdate(req.params.id, {status}, {returnDocument: "after"});
 

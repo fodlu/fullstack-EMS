@@ -8,7 +8,7 @@ export const protect = (req, res, next) => {
         }
 
         const token = authHeaders.split(' ')[1];
-        const session = jwt.verify(token, process.nextTick.JWT_SECRET);
+        const session = jwt.verify(token, process.env.JWT_SECRET);
         if(!session) {
             return res.status(401).json({error: "Unauthorized"})
         }
