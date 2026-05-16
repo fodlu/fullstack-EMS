@@ -2,6 +2,7 @@ import {Inngest} from "inngest";
 import Attendance from "../models/attendance.js";
 import Employee from "../models/Employee.js";
 import leaveApplication from "../models/leaveApplication.js";
+import sendEmail from "../config/nodemailer.js";
 
 // create an Inngest client to send events and recieve events
 export const inngest = new Inngest({ id: 'fullstack-ems', name: 'Fullstack EMS' });
@@ -24,6 +25,23 @@ const autoCheckout = inngest.createFunction(
             const employee = await Employee.findById(employeeId);
 
             // send reminder email
+            await sendEmail({
+                to: employee.email,
+                subject: "Attendance check out reminder",
+                /* text: `Dear ${employee.firstName},\n\nThis is a reminder to check out from work. Our records show that you checked in at ${new Date(attendance.checkIn).toLocaleTimeString("en-US", { timeZone: "Africa/Lagos" })} but have not checked out yet. Please remember to check out before leaving work to ensure accurate attendance records.\n\nThank you!` */
+                text:  `
+                <div style="max-width: 600px;">
+                    <h2>Hi ${employee.firstName}, 👋</h2>
+                    <p style="font-size: 16px;">You have a check-in in ${employee.department} today:</p>
+                    <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">${attendance?.checkIn?.toLocaleTimeString()}</p>
+                    <p style="font-size: 16px;">Please make sure to check-out in one hour.</p>
+                    <p style="font-size: 16px;">If you have any questions, please contact your admin.</p>
+                    <br />
+                    <p style="font-size: 16px;">Best Regards,</p>
+                    <p style="font-size: 16px;">EMS</p>
+                    </div>
+                `
+            });
 
             // After 10 hours, mark attendance as checked out with status "LATE"
             await step.sleepUntil("wait-for-1-hours", new Date(Date.now() + 1 * 60 * 60 * 1000));
@@ -56,6 +74,21 @@ const leaveApplicationReminder = inngest.createFunction(
         }
 
         // send reminder email to admin to take action on leave application
+        await sendEmail({
+            to: process.env.ADMIN_EMAIL,
+            subject: "Leave application reminder",
+            text: `
+                <div style="max-width: 600px;">
+                    <h2>Hi Admin, 👋</h2>
+                    <p style="font-size: 16px;">You have a leave application in ${employee.department} today:</p>
+                    <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">${leaveApplication?.startDate?.toLocaleDateString()}</p>
+                    <p style="font-size: 16px;">Please make sure to take action on this leave application.</p>
+                    <br />
+                    <p style="font-size: 16px;">Best Regards,</p>
+                    <p style="font-size: 16px;">EMS</p>
+                </div>
+                `
+        });
 
     }
 );
@@ -97,8 +130,27 @@ const attendanceReminderCron = inngest.createFunction(
             await step.run("send-reminder-email", async() => {
                 const emailPromises = absentEmployees.map((emp) => {
                     // send email to emp.email
-                })
-            })
+
+                    await sendEmail({
+                        to: emp.email,
+                        subject: "Attendance reminder - please mark your attendance",
+                        text: `
+                            <div style="max-width: 600px; font-family: Arial, sans-serif;">
+                                <h2>Hi ${emp.firstName}, 👋</h2>
+                                <p style="font-size: 16px;">We noticed you haven't marked your attendance yet today.</p>
+                                <p style="font-size: 16px;">The deadline was <strong>11:30 AM</strong> and your attendance is still missing.</p>
+                                <p style="font-size: 16px;">Please check in as soon as possible or contact your admin if you're facing any issues.</p>
+                                <br />
+                                <p style="font-size: 14px; color: #666;">Department: ${emp.department}</p>
+                                <br />
+                                <p style="font-size: 16px;">Best Regards,</p>
+                                <p style="font-size: 16px;"><strong>QuickEMS</strong></p>
+                            </div>
+                        `
+                    });
+                });
+                await Promise.all(emailPromises);
+            });
         }
 
         return {totalActive: activeEmployees.length, onLeave: onLeaveIds.length, checkedIn: checkeInIds.length, absent: absentEmployees.length};
