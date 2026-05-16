@@ -41,7 +41,7 @@ export const clockInOut = async (req, res) => {
             existing.checkOut = now;
 
             // compute working hour time and date
-            const workingHours = parseFloat(diffHours.toFixed(2));
+            const workingHours = parseFloat(differenceInHour.toFixed(2));
             let dayType = "Half Day";
 
             if(workingHours >= 8) {
@@ -70,8 +70,6 @@ export const getAttendance = async (req, res) => {
     try {
         const session = req.session;
         const employee = await Employee.findById({userId: session.userId});
-        if(!employee) return res.status(404).json({error: "Employee not found"})
-
         if(!employee) return res.status(404).json({error: "Employee not found"});
 
         const limit = parseInt(req.query.limit || 30);
@@ -83,6 +81,5 @@ export const getAttendance = async (req, res) => {
         })
     } catch (error) {
         return res.status(500).json({error: 'Operation failed'})
-
     }
 }

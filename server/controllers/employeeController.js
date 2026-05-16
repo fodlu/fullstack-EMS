@@ -29,7 +29,7 @@ export const getEmployees = async (req, res) => {
 // POST /api/employees
 export const createEmployee = async (req, res) => {
     try {
-        const id = req.params;
+        const {id} = req.params;
         const {firstName, lastName, email, password, phone, position, basicSalary, allowances, deductions, employmentStatus, joinDate, bio, department} = req.body;
 
         const employee = await Employee.findById(id);
@@ -56,8 +56,6 @@ export const createEmployee = async (req, res) => {
         if(role) userUpdate.role = role;
         if(password) userUpdate.password = await bcrypt.hash(password, 10)
         await User.findByIdAndUpdate(employee.userId, userUpdate)
-
-        return res.json({success: true})
 
         return res.status(201).json({success: true, employee});
     } catch (error) {
@@ -122,7 +120,7 @@ export const deleteEmployee = async (req, res) => {
         employee.isDeleted = true
         employee.employementStatus = "INACTIVE"
         await Employee.save()
-        await res.jsonn({success: true})
+        await res.json({success: true, message: "Employee deleted successfully"})
     } catch (error) {
         res.status(500).json({error: "Failed to delete employee"})
     }
