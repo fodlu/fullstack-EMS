@@ -1,25 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import { href, Link, useLocation } from 'react-router-dom';
-import {dummyProfileData} from '../assets/assets.jsx'
-import {CalendarIcon, ChevronRightIcon, DollarSignIcon, FileTextIcon, LayoutGridIcon, LogOutIcon, MenuIcon, SettingsIcon, UserIcon, XIcon} from 'lucide-react';
+import { useEffect, useState } from 'react'
+import { Link, Navigate, useLocation } from 'react-router-dom';
+import {CalendarIcon, ChevronRightIcon, DollarSignIcon, FileTextIcon, LayoutGridIcon, Loader2, LogOutIcon, MenuIcon, SettingsIcon, UserIcon, XIcon} from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
+import Loading from './Loading.jsx';
+import api from '../api/axios.js';
 
 const Sidebar = () => {
-    const {pathname} = useLocation();
+    const {user, loading, logout} = useAuth();
+
+    if(loading) return <Loading />;
+    if(!user) return <Navigate to='/login' />
+
     const [userName, setUserName] = useState('');
     const [mobileOpen, setMobileOpen] = useState(false);
-    const role = 'ADMIN' || 'Employee'
+    const {pathname} = useLocation();
+    const role = user?.role
 
     const navItems = [
         {name: "Dashboard", href: '/dashboard', icon: LayoutGridIcon},
-        role === 'ADMIN' ?
+        (role === 'ADMIN' ?
         {name: "Employee", href: '/employees', icon: UserIcon} :
-        {name: "Attendance", href: '/attendance', icon: CalendarIcon},
+        {name: "Attendance", href: '/attendance', icon: CalendarIcon}),
         {name: "Leave", href: '/leave', icon: FileTextIcon},
         {name: "Payslips", href: '/payslip', icon: DollarSignIcon},
         {name: "Settings", href: '/settings', icon: SettingsIcon},
     ]
 
     const handleLogout = () => {
+        logout();
         window.location.href = '/login'
     }
 
@@ -66,7 +74,12 @@ const Sidebar = () => {
 
             {/* Navigation Lists */}
             <div className="flex-1 px-3 space-y-0.5 overflow-y-auto">
-                {navItems.map((item)=> {
+                {loading ? (
+                    <div className='px-3 py-3 flex items-center gap-2 text-slate-500'>
+                        <Loader2 className='animate-spin w-4 h-4' />
+                    </div>
+                    ) : (
+                    navItems.map((item)=> {
                     const isActive = pathname.startsWith(item.href);
 
                     return (
@@ -79,13 +92,14 @@ const Sidebar = () => {
                             {isActive && <ChevronRightIcon className='w-3.5 h-3.5 text-indigo-500/50' /> }
                         </Link>
                     )
-                })}
+                    })
+                    )}
             </div>
 
             {/* Logout */}
             <div className="p-3 border-t border-white/6">
                 <button onClick={handleLogout} className='flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-[13px] font-medium text-slate-400 hover:text-red-400 hover:bg-rose-500/8 transition-all duration-150'>
-                    <LogOutIcon className='w-[17px] h-[17px]' />
+                    <LogOutIcon className='w-4.25 h-4.25' />
                     <span className="">Logout</span>
                 </button>
             </div>
@@ -94,7 +108,9 @@ const Sidebar = () => {
 
 
     useEffect(()=> {
-        setUserName(dummyProfileData.firstName + ' ' + dummyProfileData.lastName );
+        api.get("/profile").then(({data}) => {
+            if(data.firstName) setUserName(`${data.firstName} ${data.lastName || ""}`.trim())
+        })
     }, [])
 
     // Close mobile sidebar when route changes
@@ -116,7 +132,7 @@ const Sidebar = () => {
         {mobileOpen && <div className='lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40' onClick={()=> setMobileOpen(false)} />}
 
         {/* Sidebar desktop */}
-        <aside className='hidden lg:flex flex-col w-65 bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white shrink-0 border-r border-white/4'>
+        <aside className='hidden lg:flex flex-col w-65 h-screen bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white shrink-0 border-r border-white/4'>
             { sidebarContent}
         </aside>
 
