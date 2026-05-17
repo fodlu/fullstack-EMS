@@ -1,7 +1,9 @@
 import LoginLeftSide from './LoginLeftSide'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../context/authContext';
+import toast from 'react-hot-toast';
 
 const LoginForm = ({role, title, subtitle}) => {
   const [email, setEmail] = useState('');
@@ -10,12 +12,22 @@ const LoginForm = ({role, title, subtitle}) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const {login} = useAuth
+  const navigate = useNavigate()
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    try {
+      await login(email, password, role);
+      navigate("/dashboard")
+    } catch (error) {
+      toast.error(error.response?.data.error || error.message || "Login failed")
+    } finally{
+      setLoading(false)
+    }
   }
-
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -24,14 +36,15 @@ const LoginForm = ({role, title, subtitle}) => {
       <div className='flex-1 flex flex-col items-center justify-center p-6 sm:p-12 bg-white'>
         <div className='w-full max-w-md animate-fade-in'>
 
-        <Link to="/login" className='inline-flex items-center gap-2 text-slate-400 hover:text-slate-700 text-sm mb-10 transition-colors' >
-          <ArrowLeftIcon size={16} />
-          Back to portals
-        </Link>
+          <Link to="/login" className='inline-flex items-center gap-2 text-slate-400 hover:text-slate-700 text-sm mb-10 transition-colors' >
+            <ArrowLeftIcon size={16} />
+            Back to portals
+          </Link>
 
-        <div className='mb-8'>
-          <h1 className='text-2xl sm:text-3xl font-medium'>{title}</h1>
-          <p className="text-slate-500 text-sm sm:text-base mt-2">{subtitle}</p>
+          <div className='mb-8'>
+            <h1 className='text-2xl sm:text-3xl font-medium'>{title}</h1>
+            <p className="text-slate-500 text-sm sm:text-base mt-2">{subtitle}</p>
+          </div>
         </div>
       </div>
 
@@ -65,7 +78,6 @@ const LoginForm = ({role, title, subtitle}) => {
           Sign in
         </button>
       </form>
-      </div>
     </div>
   )
 }

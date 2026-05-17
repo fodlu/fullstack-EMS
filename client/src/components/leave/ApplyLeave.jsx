@@ -1,5 +1,7 @@
 import { CalendarDays, FileTextIcon, Loader2, Send, X } from 'lucide-react';
-import React, { useState } from 'react'
+import { useState } from 'react'
+import api from '../../api/axios';
+import toast from 'react-hot-toast';
 
 const ApplyLeave = ({open, onClose, onSuccess}) => {
     const [loading, setLoading] = useState(false);
@@ -11,6 +13,18 @@ const ApplyLeave = ({open, onClose, onSuccess}) => {
 
     const handleSubmit = async(e) => {
         e.preventDefault();
+        setLoading(true)
+
+        const formData = new FormData(e.currentTarget)
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            await api.post('/leave', data)
+            onSuccess();
+            onClose()
+        } catch (error) {
+            toast.error(error?.response?.data?.error || error?.message)
+        }
     }
 
     if(!open) return null;
@@ -75,7 +89,7 @@ const ApplyLeave = ({open, onClose, onSuccess}) => {
                     {/* button */}
 
                     <div className="flex gap-3 pt-2">
-                        <button className='btn-secondary flex-1' onClick={onClose} type='button'>Cancel</button>
+                        <button className='btn-secondary flex-1' type='button'>Cancel</button>
                         <button className='btn-primary flex-1 flex items-center justify-center gap-2' disabled={loading} onClick={onClose} type='submit'>
                             {loading ? <Loader2 className='w-5 h-5 animate-spin' /> : <Send className='w-5 h-5'/> }
 
