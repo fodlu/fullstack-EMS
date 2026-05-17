@@ -10,7 +10,7 @@ const AdminDashboard = ({data}) => {
         },
         {
             icon: Building2Icon,
-            value: data.totalDepartment,
+            value: data.totalDepartments,
             label: 'Departments',
             description: 'Organization units',
         },
@@ -48,7 +48,6 @@ const AdminDashboard = ({data}) => {
                 </div>
             ))}
         </div>
-
     </div>
   )
 }
