@@ -2,7 +2,7 @@ import LoginLeftSide from './LoginLeftSide'
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
 import { useState } from 'react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const LoginForm = ({role, title, subtitle}) => {
@@ -12,7 +12,7 @@ const LoginForm = ({role, title, subtitle}) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const {login} = useAuth
+  const {login} = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -33,7 +33,7 @@ const LoginForm = ({role, title, subtitle}) => {
     <div className="min-h-screen flex flex-col md:flex-row">
       <LoginLeftSide />
 
-      <div className='flex-1 flex flex-col items-center justify-center p-6 sm:p-12 bg-white'>
+      <div className='flex-1 flex flex-row items-center justify-center p-6 sm:p-12 bg-white'>
         <div className='w-full max-w-md animate-fade-in'>
 
           <Link to="/login" className='inline-flex items-center gap-2 text-slate-400 hover:text-slate-700 text-sm mb-10 transition-colors' >
@@ -55,7 +55,7 @@ const LoginForm = ({role, title, subtitle}) => {
         </div>
       )}
 
-      <form className='space-y-5 w-full' onSubmit={handleSubmit}>
+      <form className='space-y-5 w-full border' onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email" className='block text-sm font-medium text-slate-700 mb-2'>Email</label>
           <input type="email" name='email' value={email} onChange={(e) => setEmail(e.target.value)}  required placeholder='john@example.com'/>
