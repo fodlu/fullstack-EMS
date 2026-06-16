@@ -16,6 +16,7 @@ export const clockInOut = async (req, res) => {
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+<<<<<<< HEAD
 
         const existing = await Attendance.findOne({
             employeeId: employee._id,
@@ -67,6 +68,71 @@ export const clockInOut = async (req, res) => {
         } else {
             return res.json({success: true, type: "CHECK_OUT", data: existing})
         }
+=======
+
+        const existing = await Attendance.findOne({
+            employeeId: employee._id,
+            date: today
+        })
+
+        const now = new Date();
+
+        if(!existing){
+            const isLate = now.getHours() >=9 && now.getMinutes() > 0;
+            const attendance = await attendance.create({
+                employeeId: employee._id,
+                date: today,
+                checkIn: now,
+                status: isLate ? "LATE" : "PRESENT"
+            })
+
+            await inngest.send({
+                name: "employee/check-out",
+                data: {
+                    employeeId: employee._id,
+                    attendanceId: attendance._id,
+                }
+            })
+
+            return res.json({
+                success: true, type: "CHECK-IN", data: attendance
+            })
+        } else if (!existing.checkOut) {
+            const checkInTime = new Date(existing.checkIn).getTime();
+            const diffMs = now.getTime() - checkInTime;
+            const diffHrs = diffMs / (1000 * 60 * 60)
+
+            existing.checkout = now;
+
+            // compute working hour and day-type
+            const workingHours = parseFloat(diffHrs.toFixed(2))
+            let dayType = "Half Day";
+
+            if(workingHours >= 8) dayType = "FUll Day"
+            else if(workingHours >= 6) dayType = "Three Quarter Day"
+            else if(workingHours >= 6) dayType = "Three Quarter Day"
+            else if(workingHours >= 4) dayType = "Half Day"
+            else dayType = "Short Day"
+
+            existing.workingHours = workingHours;
+            existing.dayType = dayType;
+
+            await existing.save()
+            return res.json({success: true, type: "CHECK_OUT", data: existing})
+        } else {
+            return res.json({success: true, type: "CHECK_OUT", data: existing})
+        }
+
+/*         const limit = parseInt(req.query.limit || 30);
+        const history = (await Attendance.find({employeeId: employee._id})).toSorted({date: -1}).limit(limit)
+
+        return res.json({
+            date: history,
+            employee: {isDeleted:
+                employee.isDeleted
+            }
+        }) */
+>>>>>>> 18d2a73 (components updated)
     } catch (error) {
         console.error("Atendance Error: ", error);
         return res.status(500).json({error: 'Operation failed'})
