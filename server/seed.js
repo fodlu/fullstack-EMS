@@ -19,13 +19,13 @@ async function registerAdmin() {
         const exisitingAdmin = await User.findOne({email: process.env.ADMIN_EMAIL});
 
         if(exisitingAdmin){
-            console.log("User already as role", exisitingAdmin.role);
+            console.log("User already as role ", exisitingAdmin.role);
             process.exit(0)
         }
 
         const hashedPassword = await bcrypt.hash(temporaryPassword, 10)
 
-        const admin =await User.create({
+        const admin = await User.create({
             email: process.env.ADMIN_EMAIL,
             password: hashedPassword,
             role: 'ADMIN'

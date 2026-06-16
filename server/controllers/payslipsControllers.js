@@ -10,7 +10,7 @@ export const createPayslip = async(req, res) => {
             return res.status(400).json({error: "All fields are required"})
         }
 
-        const netsalary = basicSalary + (allowances || 0) - (deductions || 0);
+        const netsalary = Number(basicSalary) + Number(allowances || 0) - Number(deductions || 0);
 
         const payslip = await Payslip.create({
             employeeId,
@@ -27,7 +27,6 @@ export const createPayslip = async(req, res) => {
         res.status(500).json({error: "failed"});
     }
 }
-
 // get payslip
 // GET /api/payslips/
 export const getPayslip = async(req, res) => {
@@ -41,17 +40,16 @@ export const getPayslip = async(req, res) => {
                 const obj = p.toObject();
                 return {...obj, id: obj._id.toString(), employee: obj.employeeId, employeeId: obj.employeeId?._id?.toString()}
             })
-            res.status(200).json({success: true, data});
+            return res.status(200).json({success: true, data});
         } else {
             const employee = await Employee.findOne({
                 userId: session.userId,
             })
             if(!employee) return res.status(404).json({error: "Not found"});
 
-            const payslips = await Payslip.find({
-                employeeId: employee._id}).sort({createdAt:-1});
+            const payslips = await Payslip.find({employeeId: employee._id}).sort({createdAt:-1});
 
-            res.json({success: true, data: payslips});
+            return res.json({success: true, data: payslips});
         }
     } catch (error) {
         res.status(500).json({error: "failed"});
@@ -69,6 +67,6 @@ export const getPayslipById = async(req, res) => {
         const result = {...payslip, id: payslip._id.toString(), employee: payslip.employeeId }
         return res.json(result);
     } catch (error) {
-
+        return res.status(500).json({ error: "Failed" })
     }
 }
