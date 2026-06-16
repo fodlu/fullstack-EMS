@@ -43,7 +43,6 @@ export const login = async (req, res) => {
 
 // get session for admin and employees
 // GET /api/auth/session
-
 export const session = (req, res) => {
 	const session = req.session;
 	return res.json({ user: session });
