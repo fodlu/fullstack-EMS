@@ -131,7 +131,7 @@ const attendanceReminderCron = inngest.createFunction(
                 const emailPromises = absentEmployees.map((emp) => {
                     // send email to emp.email
 
-                    await sendEmail({
+                    sendEmail({
                         to: emp.email,
                         subject: "Attendance reminder - please mark your attendance",
                         text: `
