@@ -2,7 +2,8 @@ import LoginLeftSide from './LoginLeftSide'
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
 import { useState } from 'react';
-import { useAuth } from '../context/authContext';
+
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const LoginForm = ({role, title, subtitle}) => {
@@ -12,7 +13,8 @@ const LoginForm = ({role, title, subtitle}) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const {login} = useAuth
+
+  const {login} = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -33,8 +35,8 @@ const LoginForm = ({role, title, subtitle}) => {
     <div className="min-h-screen flex flex-col md:flex-row">
       <LoginLeftSide />
 
-      <div className='flex-1 flex flex-col items-center justify-center p-6 sm:p-12 bg-white'>
-        <div className='w-full max-w-md animate-fade-in'>
+      <div className='flex-1 flex flex-col items-start justify-center p-6 sm:p-12 bg-white'>
+        <div className='w-full  max-w-md animate-fade-in'>
 
           <Link to="/login" className='inline-flex items-center gap-2 text-slate-400 hover:text-slate-700 text-sm mb-10 transition-colors' >
             <ArrowLeftIcon size={16} />
@@ -46,38 +48,41 @@ const LoginForm = ({role, title, subtitle}) => {
             <p className="text-slate-500 text-sm sm:text-base mt-2">{subtitle}</p>
           </div>
         </div>
-      </div>
 
-      {error && (
-        <div className='mb-6 p-4 bg-rose-50 border border-rose-200 text-red-700 text-sm rounded-xl flex items-start gap-3'>
-          <div className='w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0' />
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className='mb-6 p-4 bg-rose-50 border border-rose-200 text-red-700 text-sm rounded-xl flex items-start gap-3'>
+            <div className='w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0' />
+            {error}
+          </div>
+        )}
 
-      <form className='space-y-5 w-full' onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email" className='block text-sm font-medium text-slate-700 mb-2'>Email</label>
-          <input type="email" name='email' value={email} onChange={(e) => setEmail(e.target.value)}  required placeholder='john@example.com'/>
-        </div>
-        <div>
-          <label htmlFor="password" className='block text-sm font-medium text-slate-700 mb-2'>Password</label>
+        <form className='space-y-5 w-full' onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="email" className='block text-sm font-medium text-slate-700 mb-2'>Email</label>
+            <input type="email" name='email' value={email} onChange={(e) => setEmail(e.target.value)}  required placeholder='john@example.com'/>
+          </div>
+          <div>
+            <label htmlFor="password" className='block text-sm font-medium text-slate-700 mb-2'>Password</label>
 
-          <div className='relative'>
-            <input type={showPassword ? "text" : "password"} name='password' value={password} onChange={(e) => setPassword(e.target.value)} className='pr-11' required placeholder='••••••••'/>
+            <div className='relative'>
+              <input type={showPassword ? "text" : "password"} name='password' value={password} onChange={(e) => setPassword(e.target.value)} className='pr-11' required placeholder='••••••••'/>
 
-            <button type='button' className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors' onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
-            </button>
+              <button type='button' className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors' onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+              </button>
+            </div>
+
           </div>
 
-        </div>
+          <button type='submit' disabled={loading} className='w-full py-3 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-md text-sm font-semibold  hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] flex items-center justify-center'>
+            {loading && <Loader2Icon className='animate-spin h-4 w-4 mr-2' />}
+            Sign in
+          </button>
+        </form>
+      </div>
 
-        <button type='submit' disabled={loading} className='w-full py-3 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-md text-sm font-semibold  hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] flex items-center justify-center'>
-          {loading && <Loader2Icon className='animate-spin h-4 w-4 mr-2' />}
-          Sign in
-        </button>
-      </form>
+
+
     </div>
   )
 }

@@ -8,10 +8,10 @@ import toast from 'react-hot-toast';
 const LeaveHistory = ({leaves, isAdmin, onUpdate}) => {
     const [processing, setProcessing] = useState(null);
 
-    const handleStatusUpdate = async (id) => {
+    const handleStatusUpdate = async (id, status) => {
         setProcessing(id)
         try {
-            await api.patch(`/leave/${id}`, {status})
+            await api.patch(`/leaves/${id}`, {status})
             onUpdate()
         } catch (error) {
             toast.error(error?.response?.data?.error || error.message)
