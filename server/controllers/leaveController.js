@@ -44,7 +44,11 @@ export const createLeave = async (req, res) => {
 				.json({ error: "Leave date cannot be before the start date" });
 		}
 
+<<<<<<< HEAD
+		const leave = await leaveApplication.create({
+=======
 		const leave = await LeaveApplication.create({
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 			type,
 			employeeId: employee._id,
 			startDate: new Date(startDate),
@@ -57,7 +61,11 @@ export const createLeave = async (req, res) => {
 			{
 				name: "leave/pending",
 				data: {
+<<<<<<< HEAD
+					leaveApplicationId: leave._id,
+=======
 					LeaveApplicationId: leave._id,
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 				},
 			},
 		]);
@@ -78,7 +86,11 @@ export const getLeave = async (req, res) => {
 		if (isAdmin) {
 			const status = req.query.status;
 			const where = status ? { status } : {};
+<<<<<<< HEAD
+			const leaves = await leaveApplication
+=======
 			const leaves = await LeaveApplication
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 				.find(where)
 				.populate("employeeId")
 				.sort({ createdAt: -1 });
@@ -101,7 +113,11 @@ export const getLeave = async (req, res) => {
 
 			if (!employee) return res.status(404).json({ error: "Not found" });
 
+<<<<<<< HEAD
+			const leaves = await leaveApplication
+=======
 			const leaves = await LeaveApplication
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 				.find({
 					employeeId: employee._id,
 				})
@@ -127,7 +143,11 @@ export const updateLeaveStatus = async (req, res) => {
 		}
 
 
+<<<<<<< HEAD
+		const leave = await leaveApplication.findByIdAndUpdate(
+=======
 		const leave = await LeaveApplication.findByIdAndUpdate(
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 			req.params.id,
 			{ status },
 			{ returnDocument: "after" },

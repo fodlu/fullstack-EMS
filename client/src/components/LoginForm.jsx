@@ -2,6 +2,8 @@ import LoginLeftSide from './LoginLeftSide'
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -13,7 +15,10 @@ const LoginForm = ({role, title, subtitle}) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
   const {login} = useAuth()
   const navigate = useNavigate()
 

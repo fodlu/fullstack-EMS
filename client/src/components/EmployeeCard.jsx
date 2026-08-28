@@ -8,7 +8,10 @@ const EmployeeCard = ({employee, onDelete, onEdit}) => {
         if(!confirm('Are you sure you want to delete this employee?')) return;
 
         try {
+<<<<<<< HEAD
+=======
 
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
             await api.delete(`employees/${employee._id}`);
             onDelete()
         } catch (error) {
