@@ -6,6 +6,7 @@ const ProfileForm = ({initialData, onSuccess}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [bio, setBio] = useState(initialData.bio)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -60,14 +61,14 @@ const ProfileForm = ({initialData, onSuccess}) => {
             </div>
             <div className="">
                 <label className='block text-sm font-medium text-slate-700 mb-2'>Bio</label>
-                <textarea name="bio" defaultValue={initialData.bio || ""} placeholder='Write a brief bio...' className={`resize-none ${initialData.isDeleted ? 'bg-slate-50 text-slate-400 cursor-not-allowed': ""}`} id="" disabled={initialData.isDeleted} />
+                <textarea name="bio" defaultValue={bio || ""} placeholder='Write a brief bio...' onChange={(e) => setBio(e.target.value)} className={`resize-none ${initialData.isDeleted ? 'bg-slate-50 text-slate-400 cursor-not-allowed': ""}`} id="" disabled={initialData.isDeleted} />
                 <p className="text-xs text-slate-400 mt-1.5">This will be displayed on your profile.</p>
             </div>
             {initialData.isDeleted ? (
                 <div className="pt-2">
                     <div className="">
                         <p className="text-rose-600 font-medium tracking-tight">Account Deactivated</p>
-                        <p className='text-sm text-rose-500 mt-0.5'>Ypu can no longer update your profile</p>
+                        <p className='text-sm text-rose-500 mt-0.5'>You can no longer update your profile</p>
                     </div>
                 </div>
             ) : (

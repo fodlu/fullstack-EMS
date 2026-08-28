@@ -31,6 +31,6 @@ const leaveApplicationSchema = new mongoose.Schema({
     }
 }, {timestamps: true});
 
-const leaveApplication = mongoose.models.leaveApplication || mongoose.model('LeaveApplication', leaveApplicationSchema)
+const LeaveApplication = mongoose.models.LeaveApplication || mongoose.model('LeaveApplication', leaveApplicationSchema)
 
-export default leaveApplication;
+export default LeaveApplication;
