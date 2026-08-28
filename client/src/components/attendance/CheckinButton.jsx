@@ -9,7 +9,11 @@ const CheckinButton = ({todayRecord, onAction}) => {
     const handleAttendance = async() => {
         setLoading(true);
         try {
+<<<<<<< HEAD
             await api.post('/attendance');
+=======
+            await api.post('/attendance')
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
             onAction()
         } catch (error) {
             toast.error(error?.response?.data?.error || error?.message)

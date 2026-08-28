@@ -1,7 +1,7 @@
 import { DEPARTMENTS } from "../constants/departments.js";
 import Attendance from "../models/attendance.js";
 import Employee from "../models/Employee.js";
-import leaveApplication from "../models/leaveApplication.js";
+import LeaveApplication from "../models/leaveApplication.js";
 import Payslip from "../models/payslip.js";
 
 // get daashboard for employee and admin
@@ -18,7 +18,7 @@ export const getDashboard = async (req, res) => {
                             $lt: new Date(new Date().setHours(24,0,0,0))
                         }
                     }),
-                leaveApplication.countDocuments({status: "PENDING"})
+                LeaveApplication.countDocuments({status: "PENDING"})
                 ])
 
             return res.json({
@@ -44,7 +44,7 @@ export const getDashboard = async (req, res) => {
                             $lt: new Date(today.getFullYear(), today.getMonth() + 1, 1),
                         }
                 }),
-                leaveApplication.countDocuments({
+                LeaveApplication.countDocuments({
                     employeeId: employee._id,
                     status: "PENDING",
                 }),

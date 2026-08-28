@@ -1,7 +1,7 @@
 import { Inngest } from "inngest";
 import Attendance from "../models/attendance.js";
 import Employee from "../models/Employee.js";
-import leaveApplication from "../models/leaveApplication.js";
+import LeaveApplication from "../models/leaveApplication.js";
 import sendEmail from "../config/nodemailer.js";
 
 // create an Inngest client to send events and recieve events
@@ -13,7 +13,11 @@ export const inngest = new Inngest({
 // Auto checkout for employees who forget to check out
 // This function will run every day at 6pm and check for employees who have checked in but not checked out, and automatically check them out
 const autoCheckout = inngest.createFunction(
+<<<<<<< HEAD
 	{ id: "auto-check-out", triggers: [{ event: "employee/check-out" }] },
+=======
+	{ id: "auto-check-out", triggers: { event: "employee/check-out" } },
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 	async ({ event, step }) => {
 		const { employeeId, attendanceId } = event.data;
 
@@ -71,7 +75,11 @@ const autoCheckout = inngest.createFunction(
 
 // send email to admin, if admin doesn't take action on leave application within 24 hours
 const leaveApplicationReminder = inngest.createFunction(
+<<<<<<< HEAD
 	{ id: "leave-application-reminder", triggers: [{ event: "leave/pending" }] },
+=======
+	{ id: "leave-application-reminder", triggers: { event: "leave/pending" } },
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 	async ({ event, step }) => {
 		const { leaveApplicationId } = event.data;
 
@@ -82,6 +90,7 @@ const leaveApplicationReminder = inngest.createFunction(
 		);
 
 		const leaveApplication =
+<<<<<<< HEAD
 			await leaveApplication.findById(leaveApplicationId);
 		if (leaveApplication?.status === "PENDING") {
 			const employee = await Employee.findById(leaveApplication.employeeId);
@@ -92,6 +101,17 @@ const leaveApplicationReminder = inngest.createFunction(
 			to: process.env.ADMIN_EMAIL,
 			subject: "Leave application reminder",
 			body: `
+=======
+			await LeaveApplication.findById(leaveApplicationId);
+		if (leaveApplication?.status === "PENDING") {
+			const employee = await Employee.findById(leaveApplication.employeeId);
+
+			// send reminder email to admin to take action on leave application
+			await sendEmail({
+				to: process.env.ADMIN_EMAIL,
+				subject: "Leave application reminder",
+				body: `
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
                 <div style="max-width: 600px;">
                     <h2>Hi Admin, 👋</h2>
                     <p style="font-size: 16px;">You have a leave application in ${employee.department} today:</p>
@@ -102,13 +122,22 @@ const leaveApplicationReminder = inngest.createFunction(
                     <p style="font-size: 16px;">EMS</p>
                 </div>
                 `,
+<<<<<<< HEAD
 		});
+=======
+			});
+		}
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 	},
 );
 
 // Cron: Check attendance at 11:30 AM and email absent employees
 const attendanceReminderCron = inngest.createFunction(
+<<<<<<< HEAD
 	{ id: "attendance-reminder-cron", triggers: [{ cron: "0 0 6 * * *" }]}, // every day at 6:00 AM which is 2:00 PM Nigerian time
+=======
+	{ id: "attendance-reminder-cron", triggers: { cron: "0 0 6 * * *" } }, // every day at 6:00 AM which is 2:00 PM Nigerian time
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 	async ({ step }) => {
 		// step1: Get today's date range
 		const today = await step.run("get-todays-date-range", () => {
@@ -137,7 +166,11 @@ const attendanceReminderCron = inngest.createFunction(
 
 		// step 3: Get employees ID on approved leave for today
 		const onLeaveIds = await step.run("get-on-leave-ids", async () => {
+<<<<<<< HEAD
 			const leaves = await leaveApplication
+=======
+			const leaves = await LeaveApplication
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 				.find({
 					status: "APPROVED",
 					startDate: { $lte: today.endUTC },
@@ -161,23 +194,33 @@ const attendanceReminderCron = inngest.createFunction(
 		);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         // step 6: Send email to absent employees
         if(absentEmployees.length > 0) {
             await step.run("send-reminder-email", async() => {
                 const emailPromises = absentEmployees.map((emp) => (
                     // send email to emp.email
 =======
+=======
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 		// step 6: Send email to absent employees
 		if (absentEmployees.length > 0) {
 			await step.run("send-reminder-email", async () => {
 				const emailPromises = absentEmployees.map((emp) => {
 					// send email to emp.email
+<<<<<<< HEAD
 >>>>>>> 18d2a73 (components updated)
+=======
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 
 					sendEmail({
 						to: emp.email,
 						subject: "Attendance reminder - please mark your attendance",
+<<<<<<< HEAD
 						body: `
+=======
+						text: `
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
                             <div style="max-width: 600px; font-family: Arial, sans-serif;">
                                 <h2>Hi ${emp.firstName}, 👋</h2>
                                 <p style="font-size: 16px;">We noticed you haven't marked your attendance yet today.</p>
@@ -190,6 +233,7 @@ const attendanceReminderCron = inngest.createFunction(
                                 <p style="font-size: 16px;"><strong>QuickEMS</strong></p>
                             </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         `
                     })
                 ));
@@ -198,6 +242,8 @@ const attendanceReminderCron = inngest.createFunction(
             });
         }
 =======
+=======
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
                         `,
 					});
 				});
@@ -205,7 +251,10 @@ const attendanceReminderCron = inngest.createFunction(
 				return { emailSent: absentEmployees.length };
 			});
 		}
+<<<<<<< HEAD
 >>>>>>> 18d2a73 (components updated)
+=======
+>>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 
 		return {
 			totalActive: activeEmployees.length,
