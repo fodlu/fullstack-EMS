@@ -5,102 +5,105 @@ import Employee from "../models/Employee.js";
 // clock in/out for employee
 // POST /api/attendance
 export const clockInOut = async (req, res) => {
-    try {
-        const session = req.session;
-        const employee = await Employee.findOne({userId: session.userId});
-        if(!employee) return res.status(404).json({error: "Employee not found"})
+	try {
+		const session = req.session;
+		const employee = await Employee.findOne({ userId: session.userId });
+		if (!employee) return res.status(404).json({ error: "Employee not found" });
 
-        if(employee.isDeleted) {
-            return res.status(403).json({error: "Your account is deactivated. You cannot clock in/out"})
-        }
+		if (employee.isDeleted) {
+			return res.status(403).json({
+				error: "Your account is deactivated. You cannot clock in/out",
+			});
+		}
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
 
-        const existing = await Attendance.findOne({
-            employeeId: employee._id,
-            date: today
-        })
+		const existing = await Attendance.findOne({
+			employeeId: employee._id,
+			date: today,
+		});
 
-        const now = new Date();
+		const now = new Date();
 
-        if(!existing){
-            const isLate = now.getHours() >=9 && now.getMinutes() > 0;
-            const attendance = await attendance.create({
-                employeeId: employee._id,
-                date: today,
-                checkIn: now,
-                status: isLate ? "LATE" : "PRESENT"
-            })
+		if (!existing) {
+			const isLate = now.getHours() >= 9 && now.getMinutes() > 0;
+			const attendance = await Attendance.create({
+				employeeId: employee._id,
+				date: today,
+				checkIn: now,
+				status: isLate ? "LATE" : "PRESENT",
+			});
 
-            await inngest.send({
-                name: "employee/check-out",
-                data: {
-                    employeeId: employee._id,
-                    attendanceId: attendance._id,
-                }
-            })
+			await inngest.send({
+				name: "employee/check-out",
+				data: {
+					employeeId: employee._id,
+					attendanceId: attendance._id,
+				},
+			});
 
-            return res.json({
-                success: true, type: "CHECK-IN", data: attendance
-            })
-        } else if (!existing.checkOut) {
-            const checkInTime = new Date(existing.checkIn).getTime();
-            const diffMs = now.getTime() - checkInTime;
-            const diffHrs = diffMs / (1000 * 60 * 60)
+			return res.json({
+				success: true,
+				type: "CHECK-IN",
+				data: attendance,
+			});
+		} else if (!existing.checkOut) {
+			const checkInTime = new Date(existing.checkIn).getTime();
+			const diffMs = now.getTime() - checkInTime;
+			const diffHrs = diffMs / (1000 * 60 * 60);
 
-            existing.checkout = now;
+			existing.checkOut = now;
 
-            // compute working hour and day-type
-            const workingHours = parseFloat(diffHrs.toFixed(2))
-            let dayType = "Half Day";
+			// compute working hour and day-type
+			const workingHours = parseFloat(diffHrs.toFixed(2));
+			let dayType = "Half Day";
 
-            if(workingHours >= 8) dayType = "FUll Day"
-            else if(workingHours >= 6) dayType = "Three Quarter Day"
-            else if(workingHours >= 6) dayType = "Three Quarter Day"
-            else if(workingHours >= 4) dayType = "Half Day"
-            else dayType = "Short Day"
+			if (workingHours >= 8) dayType = "Full Day";
+			else if (workingHours >= 6) dayType = "Three Quarter Day";
+			else if (workingHours >= 6) dayType = "Three Quarter Day";
+			else if (workingHours >= 4) dayType = "Half Day";
+			else dayType = "Short Day";
 
-            existing.workingHours = workingHours;
-            existing.dayType = dayType;
+			existing.workingHours = workingHours;
+			existing.dayType = dayType;
 
-            await existing.save()
-            return res.json({success: true, type: "CHECK_OUT", data: existing})
-        } else {
-            return res.json({success: true, type: "CHECK_OUT", data: existing})
-        }
+		    console.log(existing)
 
-/*         const limit = parseInt(req.query.limit || 30);
-        const history = (await Attendance.find({employeeId: employee._id})).toSorted({date: -1}).limit(limit)
 
-        return res.json({
-            date: history,
-            employee: {isDeleted:
-                employee.isDeleted
-            }
-        }) */
-    } catch (error) {
-        console.error("Atendance Error: ", error);
-        return res.status(500).json({error: 'Operation failed'})
-    }
-}
+			await existing.save();
+			return res.json({ success: true, type: "CHECK_OUT", data: existing });
+		} else {
+			return res.json({ success: true, type: "CHECK_OUT", data: existing, message: "Fuck you" });
+		}
+
+	} catch (error) {
+		console.error("Atendance Error: ", error.message);
+		return res
+			.status(500)
+			.json({ error: error.message || "Operations failed" });
+	}
+};
 
 // get attendance for employee
 // GET /api/attendance
 export const getAttendance = async (req, res) => {
-    try {
-        const session = req.session;
-        const employee = await Employee.findById({userId: session.userId});
-        if(!employee) return res.status(404).json({error: "Employee not found"});
+	try {
+		const session = req.session;
+		const employee = await Employee.findOne({ userId: session.userId });
+		if (!employee) return res.status(404).json({ error: "Employee not found" });
 
-        const limit = parseInt(req.query.limit || 30);
-        const history = await Attendance.find({employeeId: employee._id}).sort({date: -1}).limit(limit)
 
-        return res.json({
-            data: history,
-            employee: {isDeleted: employee.isDeleted}
-        })
-    } catch (error) {
-        return res.status(500).json({error: 'Operation failed'})
-    }
-}
+		const limit = parseInt(req.query.limit || 30);
+		const history = await Attendance.find({ employeeId: employee._id })
+		.sort({ date: -1 })
+		.limit(limit);
+
+		return res.json({
+			data: history,
+			employee: { isDeleted: employee.isDeleted },
+		});
+	} catch (error) {
+		return res.status(500).json({ error: "Operation failed" });
+	}
+};

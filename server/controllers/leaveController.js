@@ -6,33 +6,39 @@ import leaveApplication from "../models/leaveApplication.js";
 export const createLeave = async (req, res) => {
 	try {
 		const session = req.session;
+
 		const employee = await Employee.findOne({ userId: session.userId });
 
 		if (!employee) return res.status(404).json({ error: "Employee not found" });
 
 		if (employee.isDeleted)
-			return res
-				.status(403)
-				.json({
-					error: "Your account is deactivated. You cannot apply for leave.",
-				});
+			return res.status(403).json({
+				error: "Your account is deactivated. You cannot apply for leave.",
+			});
 
 		const { type, startDate, endDate, reason } = req.body;
 
 		if (!type || !startDate || !endDate || !reason) {
-			res.status(400).json({ error: "Missing fields" });
+			return res.status(400).json({ error: "Missing fields" });
 		}
 
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 
-		if (new Date(startDate) <= today || new Date(endDate) <= today) {
+		const parsedStart = new Date(startDate);
+		const parsedEnd = new Date(endDate);
+
+		// Reset time flags to keep strict date comparisons clean
+		parsedStart.setHours(0, 0, 0, 0);
+		parsedEnd.setHours(0, 0, 0, 0);
+
+		if (parsedStart < today) {
 			return res
 				.status(400)
 				.json({ error: "Leave date must be in the future" });
 		}
 
-		if (new Date(endDate) < new Date(startDate)) {
+		if (parsedEnd < today) {
 			return res
 				.status(400)
 				.json({ error: "Leave date cannot be before the start date" });
@@ -47,16 +53,18 @@ export const createLeave = async (req, res) => {
 			status: "PENDING",
 		});
 
-		await inngest.send({
-			name: "leave/pending",
-			data: {
-				leaveApplicationId: leave._id,
+		await inngest.send([
+			{
+				name: "leave/pending",
+				data: {
+					leaveApplicationId: leave._id,
+				},
 			},
-		});
+		]);
 
 		return res.json({ success: true, data: leave });
 	} catch (error) {
-		return res.status(500).json({ error: "Failed" });
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -93,9 +101,11 @@ export const getLeave = async (req, res) => {
 
 			if (!employee) return res.status(404).json({ error: "Not found" });
 
-			const leaves = await leaveApplication.find({
-				employeeId: employee._id,
-			}).sort({ createdAt: -1 });
+			const leaves = await leaveApplication
+				.find({
+					employeeId: employee._id,
+				})
+				.sort({ createdAt: -1 });
 
 			return res.json({
 				data: leaves,
@@ -115,6 +125,7 @@ export const updateLeaveStatus = async (req, res) => {
 		if (!["APPROVED", "REJECTED", "PENDING"].includes(status)) {
 			return res.status(400).json({ error: "Invalid status" });
 		}
+
 
 		const leave = await leaveApplication.findByIdAndUpdate(
 			req.params.id,

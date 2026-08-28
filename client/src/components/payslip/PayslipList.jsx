@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { Download } from 'lucide-react';
 
 const PayslipList = ({payslips, isAdmin}) => {
+
   return (
     <div className='card overflow-hidden'>
         <div className="overflow-x-auto">
@@ -37,11 +38,11 @@ const PayslipList = ({payslips, isAdmin}) => {
                                     </td>
 
                                     <td className='text-slate-500'>
-                                        ${payslip.basicSalary?.toLocaleString()}
+                                        ₦{payslip.basicSalary?.toLocaleString()}
                                     </td>
 
                                     <td className='text-slate-800 font-medium'>
-                                        ${payslip.netSalary?.toLocaleString()}
+                                        ₦{payslip.netSalary?.toLocaleString()}
                                     </td>
 
                                     <td className='text-center'>

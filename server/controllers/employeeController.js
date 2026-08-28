@@ -50,9 +50,10 @@ export const createEmployee = async (req, res) => {
 			joinDate,
 			bio,
 			department,
+			role,
 		} = req.body;
 
-		if (!email || !password || !firstName || !lastName) {
+		if (!email || !password || !firstName || !lastName || !phone) {
 			return res.status(404).json({ error: "Missing required fields" });
 		}
 		const hashed = await bcrypt.hash(password, 10);
@@ -62,13 +63,25 @@ export const createEmployee = async (req, res) => {
 			role: role || "EMPLOYEE",
 		});
 
+		const validatedStatus =
+			employmentStatus && typeof employmentStatus === "string" ?
+				employmentStatus.toUpperCase().trim()
+			:	"ACTIVE";
+
+		// Verify the parsed status values match your exact allowed schema states
+		const finalStatus =
+			["ACTIVE", "INACTIVE"].includes(validatedStatus) ? validatedStatus : (
+				"ACTIVE"
+			);
+
 		const employee = await Employee.create({
 			userId: user._id,
 			firstName,
 			lastName,
 			email,
 			phone,
-			position,
+			position: position || "Staff",
+			employmentStatus: finalStatus,
 			department: department || "Engineering",
 			basicSalary: Number(basicSalary) || 0,
 			allowances: Number(allowances) || 0,
@@ -79,10 +92,24 @@ export const createEmployee = async (req, res) => {
 
 		return res.status(201).json({ success: true, employee });
 	} catch (error) {
+		// if (error.code === 11000) {
+		// 	return res.status(400).json({ error: "Email already exists" });
+		// }
+		// return res.status(500).json({ error: "Failed to create employee" });
+
+		console.error("❌ [DATABASE CRASH DETAILS]:", error);
+		console.error("Critical error inside createEmployee handler:", error);
+
 		if (error.code === 11000) {
-			return res.status(400).json({ error: "Email already exists" });
+			return res
+				.status(400)
+				.json({ error: "Email already exists inside the database" });
 		}
-		return res.status(500).json({ error: "Failed to update employee" });
+
+		return res.status(500).json({
+			error: "Failed to create employee profile record",
+			details: error.message,
+		});
 	}
 };
 
@@ -101,16 +128,25 @@ export const updateEmployee = async (req, res) => {
 			basicSalary,
 			allowances,
 			deductions,
-			employementStatus,
+			employmentStatus,
+			joinDate,
 			bio,
 			department,
-            role
+			role,
 		} = req.body;
 
-		const employeeFind = await Employee.findById(id);
+		const employee = await Employee.findById(id);
 
-		if (!employeeFind)
-			return res.status(404).json({ error: "Employee not found" });
+		if (!employee) return res.status(404).json({ error: "Employee not found" });
+
+		// 2. Normalise and check Uppercase Enum constraints for employment status updates
+		let finalStatus = employee.employmentStatus; // Fallback to current value if not provided
+		if (employmentStatus && typeof employmentStatus === "string") {
+			const upperStatus = employmentStatus.toUpperCase().trim();
+			if (["ACTIVE", "INACTIVE"].includes(upperStatus)) {
+				finalStatus = upperStatus;
+			}
+		}
 
 		await Employee.findByIdAndUpdate(id, {
 			firstName,
@@ -121,18 +157,19 @@ export const updateEmployee = async (req, res) => {
 			basicSalary: Number(basicSalary) || 0,
 			allowances: Number(allowances) || 0,
 			deductions: Number(deductions) || 0,
-			employeeStatus: employmentStatus || "ACTIVE",
-			joinDate: new Date(joinDate),
+			employmentStatus: finalStatus,
+			joinDate: joinDate ? new Date(joinDate) : employee.joinDate,
 			bio: bio || "",
 			department: department || "Engineering",
 		});
 
-        // update use record
-        const userUpdate = {email};
-        if(role) userUpdate.role = role;
-        if(password) userUpdate.password = await bcrypt.hash(password, 10);
+		// update user record
+		const userUpdate = { email };
+		if (role) userUpdate.role = role;
+		if (password && password.trim() !== "")
+			userUpdate.password = await bcrypt.hash(password, 10);
 
-        await User.findByIdAndUpdate(employee.userId, userUpdate)
+		await User.findByIdAndUpdate(employee.userId, userUpdate);
 
 		return res.status(201).json({ success: true });
 	} catch (error) {
@@ -147,13 +184,14 @@ export const updateEmployee = async (req, res) => {
 // DELETE /api/employees/:id
 export const deleteEmployee = async (req, res) => {
 	try {
-		const id = req.params;
+		const { id } = req.params;
 		const employee = await Employee.findById(id);
 		if (!employee) return res.status(404).json({ error: "Employee not found" });
 
 		employee.isDeleted = true;
 		employee.employementStatus = "INACTIVE";
-		await Employee.save();
+
+		await employee.save();
 		await res.json({ success: true, message: "Employee deleted successfully" });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to delete employee" });
