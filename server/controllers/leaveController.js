@@ -1,6 +1,6 @@
 import { inngest } from "../inngest/index.js";
 import Employee from "../models/Employee.js";
-import leaveApplication from "../models/leaveApplication.js";
+import LeaveApplication from "../models/leaveApplication.js";
 // create leave
 // POST /api/leave
 export const createLeave = async (req, res) => {
@@ -44,7 +44,7 @@ export const createLeave = async (req, res) => {
 				.json({ error: "Leave date cannot be before the start date" });
 		}
 
-		const leave = await leaveApplication.create({
+		const leave = await LeaveApplication.create({
 			type,
 			employeeId: employee._id,
 			startDate: new Date(startDate),
@@ -57,7 +57,7 @@ export const createLeave = async (req, res) => {
 			{
 				name: "leave/pending",
 				data: {
-					leaveApplicationId: leave._id,
+					LeaveApplicationId: leave._id,
 				},
 			},
 		]);
@@ -78,7 +78,7 @@ export const getLeave = async (req, res) => {
 		if (isAdmin) {
 			const status = req.query.status;
 			const where = status ? { status } : {};
-			const leaves = await leaveApplication
+			const leaves = await LeaveApplication
 				.find(where)
 				.populate("employeeId")
 				.sort({ createdAt: -1 });
@@ -101,7 +101,7 @@ export const getLeave = async (req, res) => {
 
 			if (!employee) return res.status(404).json({ error: "Not found" });
 
-			const leaves = await leaveApplication
+			const leaves = await LeaveApplication
 				.find({
 					employeeId: employee._id,
 				})
@@ -127,7 +127,7 @@ export const updateLeaveStatus = async (req, res) => {
 		}
 
 
-		const leave = await leaveApplication.findByIdAndUpdate(
+		const leave = await LeaveApplication.findByIdAndUpdate(
 			req.params.id,
 			{ status },
 			{ returnDocument: "after" },
