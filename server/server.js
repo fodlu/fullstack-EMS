@@ -1,16 +1,6 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import dns from 'node:dns';
 dns.setDefaultResultOrder("ipv4first");
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
-=======
-import dns from "node:dns";
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
->>>>>>> 2b58c15 (frontend and backend completed)
-=======
-import dns from "node:dns";
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
->>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
 
 import express from "express";
 import cors from "cors";
