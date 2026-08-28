@@ -8,7 +8,7 @@ const EmployeeCard = ({employee, onDelete, onEdit}) => {
         if(!confirm('Are you sure you want to delete this employee?')) return;
 
         try {
-            await api.delete(`employees/${employee.id}`);
+            await api.delete(`employees/${employee._id}`);
             onDelete()
         } catch (error) {
             toast.error(error.response?.data?.error || error.message)

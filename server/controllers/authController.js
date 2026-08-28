@@ -37,7 +37,7 @@ export const login = async (req, res) => {
 		return res.json({ user: payload, token });
 	} catch (error) {
 		console.error("Login error:", error);
-		res.status(500).jsdon({ error: "Login failed" });
+		res.status(500).json({ error: "Login failed" });
 	}
 };
 
