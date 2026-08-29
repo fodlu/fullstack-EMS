@@ -32,10 +32,6 @@ const App = () => {
           <Route path='/settings' element={<Settings />} />
         </Route>
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
         {/* <Route path='/test' element={<Test />} /> */}
         <Route path='/print/payslip/:id' element={<PrintPayslip />} />
         <Route path='*' element={<Navigate to='/dashboard' replace/>} />
