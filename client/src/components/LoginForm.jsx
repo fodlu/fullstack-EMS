@@ -15,10 +15,6 @@ const LoginForm = ({role, title, subtitle}) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
   const {login} = useAuth()
   const navigate = useNavigate()
 

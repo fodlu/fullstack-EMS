@@ -14,15 +14,8 @@ const ProfileForm = ({initialData, onSuccess}) => {
         setError('');
         setMessage('')
 
-<<<<<<< HEAD
         try {
-            console.log(bio)
             await api.post('/profile', {'bio': bio})
-=======
-        const formData = new FormData(e.currentTarget);
-        try {
-            await api.post('/profile', formData)
->>>>>>> 1c495c5f0cfe822b9f7afc3e1eefa095e58e0cdf
             setMessage("Profile updated successfully")
             onSuccess?.()
         } catch (error) {
